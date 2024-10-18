@@ -1,0 +1,30 @@
+name: Build and Deploy ASP.NET Core to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main  # The branch you want to trigger the workflow, usually 'main'
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up .NET Core SDK
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.x'  # Specify the .NET version you're using (in your case, .NET 6.0)
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build and publish the project
+        run: dotnet publish --configuration Release --output ./publish  # Publish the project to the 'publish' folder
+
+      - name: Deploy to Firebase Hosting
+        run: firebase deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
